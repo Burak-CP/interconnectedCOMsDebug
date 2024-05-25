@@ -22,12 +22,12 @@ public class recordProcesses {
 		dbprocesses = new dbProcesses();
 	}
 
-	private String getDbFileName() {
+	protected String getDbFileName() {
 		String filename = "db-" + new SimpleDateFormat("yyyy.MM.dd.HH").format(new Date()) + ".db";
 		return filename;
 	}
 
-	private String getFilePath(String dbFileName) {
+	protected String getFilePath(String dbFileName) {
 		String filepath = globalSymbols.dbFolder + "/" + dbFileName;
 		return filepath;
 	}

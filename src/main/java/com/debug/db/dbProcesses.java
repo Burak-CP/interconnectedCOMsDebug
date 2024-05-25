@@ -3,45 +3,44 @@ package com.debug.db;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import com.debug.db.record.recordTable;
 import com.debug.utils.globalSymbols;
+import com.debug.utils.logger;
 
 public class dbProcesses {
 
-	private Connection conn;
-	private Object lock;
+	protected Connection conn;
+	protected Object lock;
 
 	public dbProcesses() {
 		try {
 			Class.forName("org.sqlite.JDBC");
 			lock = new Object();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.ErrorLogger(dbProcesses.class, e);
 		}
 	}
 
-	private boolean connect(String path) {
+	protected boolean connect(String path) {
 		boolean isConnected = false;
 		synchronized (lock) {
 			try {
 				conn = DriverManager.getConnection(globalSymbols.jdbcPrefix + path);
 				isConnected = true;
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.ErrorLogger(dbProcesses.class, e);
 			}
 		}
 		return isConnected;
 	}
 
-	private void disconnect() {
+	protected void disconnect() {
 		try {
 			conn.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.ErrorLogger(dbProcesses.class, e);
 		}
 	}
 
@@ -70,7 +69,7 @@ public class dbProcesses {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.ErrorLogger(dbProcesses.class, e);
 		}
 		return count;
 	}
@@ -91,7 +90,7 @@ public class dbProcesses {
 				disconnect();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.ErrorLogger(dbProcesses.class, e);
 		}
 		return isEmpty;
 	}
@@ -108,28 +107,7 @@ public class dbProcesses {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
-
-	public synchronized int executeUpdate(String path, String sql, recordTable record) {
-		int result = -1;
-		try {
-			synchronized (lock) {
-				if (connect(path)) {
-					PreparedStatement pstmt = conn.prepareStatement(sql);
-					pstmt.setString(0, record.getSource());
-					pstmt.setString(1, record.getDestination());
-					pstmt.setString(2, record.getMessage());
-					pstmt.setString(3, record.getTime());
-					result = pstmt.executeUpdate();
-					pstmt.close();
-					disconnect();
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+			logger.ErrorLogger(dbProcesses.class, e);
 		}
 		return result;
 	}
